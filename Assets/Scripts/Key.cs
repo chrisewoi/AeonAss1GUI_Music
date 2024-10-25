@@ -1,4 +1,5 @@
-using System;using System.Collections;
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using Unity.Mathematics;
 using Unity.VisualScripting;
@@ -9,8 +10,9 @@ using UnityEngine.UI;
 public static class Key
 {
     public static readonly string[] CircleOfFifths = new string[] { "C", "G", "D", "A", "E", "B", "Gb", "Db", "Ab", "Eb", "Bb", "F" };
+    public static readonly int[] CircleOfFifthsIDs = new int[] { 0, 7, 2, 9, 4, 11, 6, 1, 8, 3, 10, 5 };
     public static Keys currentKey = Keys.C;
-    
+
     public static Text keyText;
     public static Text keyDetailsText;
 
@@ -24,19 +26,38 @@ public static class Key
 
     public static void SetKeyTo(int key)
     {
-
         currentKey = (Keys)key;
+        KeyRoot keyRoot = new KeyRoot(new Note(key));
+        Note[] keyNotes = keyRoot.KeyNotes();
+        
+        int preferSharpOrFlat = 0; // 0 for sharp, 1 for flat
+        foreach (Note note in keyNotes)
+        {
+            for (int i = 0; i < keyNotes.Length; i++)
+            {
+                if (note.Name[0] == keyNotes[i].Name[0] && note.Name[1] != keyNotes[i].Name[1])
+                {
+                    preferSharpOrFlat = 1;
+                }
+            }
+        }
         
         keyText = GameObject.Find("CurrentKeyText").GetComponent<Text>();
         keyText.text = "Current key: " + Key.CircleOfFifths[key];
         
         keyDetailsText = GameObject.Find("CurrentKeyDetailsText").GetComponent<Text>();
         keyDetailsText.text = "";
+        int numberOfSigns = 0;
         for(int i = 0; i < Enum.GetNames(typeof(Degrees)).Length; i++)
         {
             keyDetailsText.text += Enum.GetName(typeof(Degrees), i) + "\t";
-            keyDetailsText.text += Enum.GetName(typeof(Keys),((int)currentKey + (int)DegreeID[i]) % 12) + "\n";
+            keyDetailsText.text += keyNotes[i].Name[1] + "\n";
+
+            if (keyNotes[i].Sign) numberOfSigns++;
+            //keyDetailsText.text += Enum.GetName(typeof(Keys),((int)currentKey + (int)DegreeID[i]) % 12) + "\n";
         }
+
+        keyText.text += "\t Number of #/b: " + numberOfSigns;
     }
 
     public static string GetCircleOfFifths(int key)
@@ -195,6 +216,7 @@ public class Chord
 
     public Chord(int[] id)
     {
+        chordType = ChordType.Maj; // Default
         Notes = new Note[id.Length];
         int positionInChord = 0;
 
@@ -216,6 +238,8 @@ public class Chord
         {
             Notes[i] = AvailableNotes[i]; //Builds the chord note by note
         }
+        Name = new Note(rootID) + " " + chordType.DisplayName();
+        Debug.Log(Name);
     }
 
     public enum ChordType
@@ -273,9 +297,10 @@ public class Chord
 public class KeyRoot
 {
     public Note Root;
+    public Note ModeRoot; // TODO
     public Note[] Notes = new Note[7];
 
-    public KeyRoot(Note root)
+    public KeyRoot(Note root) //, Note ModeRoot)
     {
         Root = root;
         int magic = 0;
@@ -284,5 +309,9 @@ public class KeyRoot
             if (i > 2) magic = -1;
             Notes[i] = new Note(Root.ID + magic + (i * 2));
         }
+    }
+    public Note[] KeyNotes()
+    {
+        return Notes;
     }
 }

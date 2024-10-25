@@ -11,7 +11,7 @@ public class ButtonClickScript : MonoBehaviour
     public void OnClick()
     {
         ;
-        Key.SetKeyTo(buttonID);
+        Key.SetKeyTo(Key.CircleOfFifthsIDs[buttonID]);
         Debug.Log(KeyLibrary.AllKeys);
         //keyText.text = "Current key: " + Key.CircleOfFifths[buttonID];
 

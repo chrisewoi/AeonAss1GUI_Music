@@ -1,4 +1,4 @@
-using System;
+/*using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Mathematics;
@@ -93,7 +93,7 @@ public static class Key
         B
     }
 
-    /*public enum Intervals
+    public enum Intervals
     {
         1,
         "b2",
@@ -107,7 +107,7 @@ public static class Key
         6,
         "b7",
         7
-    }*/
+    }
 }
 
 public static class Music
@@ -315,4 +315,4 @@ public class KeyRoot
     {
         return Notes;
     }
-}
+}*/

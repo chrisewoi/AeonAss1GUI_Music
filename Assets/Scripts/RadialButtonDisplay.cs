@@ -10,7 +10,7 @@ public class RadialButtonDisplay : MonoBehaviour
     public GameObject centerPoint;
     public Vector2 panelCenter;
     public GameObject[] buttons;
-    public float radius;
+    public float radius => GetComponent<RectTransform>().rect.width/3.5f;
     public float spawnAngle;
 
 
